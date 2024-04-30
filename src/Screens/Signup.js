@@ -1,11 +1,12 @@
 import React, {useState} from "react";
-import {Link} from "react-router-dom"; // Import Link from React Router
+import {Link} from "react-router-dom";
 import axios from "axios";
-
+import {useNavigate} from "react-router-dom";
 const SignupPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSignup = async () => {
     try {
@@ -14,6 +15,8 @@ const SignupPage = () => {
         password,
         token_expires_in: "30m",
       });
+      alert("Sign up successful! Please log in.");
+      navigate("/signup");
     } catch (error) {
       console.error("Signup failed:", error);
     }
@@ -185,8 +188,7 @@ const SignupPage = () => {
               >
                 Login here
               </Link>
-            </p>{" "}
-            {/* Use Link component to navigate to login page */}
+            </p>
           </form>
           <div className="divider absolute left-0 right-0 mx-auto w-1 h-full border-l border-[#333] max-md:hidden"></div>
         </div>

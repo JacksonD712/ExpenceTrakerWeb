@@ -1,15 +1,13 @@
 import React, {useState, useEffect} from "react";
-
-function AddExpenses() {
+import {useSelector} from "react-redux";
+function Progress() {
   const [expenses, setExpenses] = useState([]);
-  const [exp, setExp] = useState([]);
+  const [budget, setBudget] = useState([]);
   const [numberOfDays, setNumberOfDays] = useState(0);
-  const [email, setEmail] = useState("");
 
-  useEffect(() => {
-    const storedEmail = localStorage.getItem("email");
-    setEmail(storedEmail);
-  }, []);
+  const [selectedDay, setSelectedDay] = useState(1);
+
+  const email = useSelector(state => state.auth.email);
 
   useEffect(() => {
     if (email) {
@@ -37,14 +35,18 @@ function AddExpenses() {
     )
       .then(response => response.json())
       .then(data => {
-        setExp(Array.isArray(data) ? data : []);
+        setBudget(Array.isArray(data) ? data : []);
       })
       .catch(error => console.error("Error fetching budget:", error));
   };
 
+  const handleDayChange = e => {
+    setSelectedDay(parseInt(e.target.value));
+  };
+
   return (
     <>
-      <section className="bg-gradient-to-tr from-sky-300 to-sky-100 h-64">
+      <section className="bg-indigo-600 h-64">
         <div className="text-white mx-auto p-4 sm:p-8 max-w-4xl">
           <h2 className="text-3xl sm:text-5xl font-light">Add Expenses</h2>
           <ul>
@@ -69,75 +71,46 @@ function AddExpenses() {
           </ul>
         </div>
       </section>
-      {Array.isArray(expenses) &&
-        expenses.length > 0 &&
-        expenses.map(expense => (
-          <section className="flex flex-wrap mt-11" key={expense.id}>
-            {[...Array(Math.ceil(numberOfDays / 5))].map((_, setIndex) => (
-              <div key={setIndex} className="flex flex-wrap w-full">
-                {[...Array(5)].map((_, index) => {
-                  const dayNumber = setIndex * 5 + index + 1;
-                  return dayNumber <= numberOfDays ? (
-                    <div key={dayNumber} className="flex-1 max-w-md m-2">
-                      <div className="relative py-3 sm:max-w-md sm:mx-auto">
-                        <div className="absolute inset-0 bg-gradient-to-r from-sky-100 to-sky-300 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
-                        <div className="relative px-4 py-8 bg-white shadow-lg sm:rounded-3xl sm:p-10">
-                          <div className="max-w-md mx-auto">
-                            <div>
-                              <h1 className="text-lg font-semibold">
-                                Day {dayNumber}
-                              </h1>
-                            </div>
 
-                            <div className="divide-y divide-gray-200">
-                              {exp
-                                .filter(exp => exp.Day === dayNumber)
-                                .map((Exp, index) => (
-                                  <div key={index}>
-                                    <p>Category: {Exp.Categories}</p>
-                                    <p>Price: {Exp.Price}$</p>
-                                  </div>
-                                ))}
-                              <p>
-                                Budget in Day: {expense.Budget / expense.Time} $
-                              </p>
-                              <p>
-                                Total Price for the day:{" "}
-                                {exp.reduce(
-                                  (acc, exp) =>
-                                    exp.Day === dayNumber
-                                      ? acc + exp.Price
-                                      : acc,
-                                  0
-                                )}{" "}
-                                $
-                              </p>
-                              <p>
-                                {" "}
-                                Remaining:{" "}
-                                {expense.Budget / expense.Time -
-                                  exp.reduce(
-                                    (acc, exp) =>
-                                      exp.Day === dayNumber
-                                        ? acc + exp.Price
-                                        : acc,
-                                    0
-                                  )}{" "}
-                                ${" "}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ) : null;
-                })}
+      <div className="mt-4 mx-auto max-w-4xl">
+        <label htmlFor="daySelect" className="block text-lg font-semibold">
+          Select Day:
+        </label>
+        <select
+          id="daySelect"
+          className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-indigo-500"
+          onChange={handleDayChange}
+          value={selectedDay}
+        >
+          {[...Array(numberOfDays)].map((_, index) => (
+            <option key={index + 1} value={index + 1}>
+              Day {index + 1}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <section className="flex flex-wrap mt-11">
+        {budget
+          .filter(exp => exp.Day === selectedDay)
+          .map((exp, index) => (
+            <div key={index} className="flex-1 max-w-md m-2">
+              <div className="max-w-md mx-auto">
+                <div>
+                  <h1 className="text-lg font-semibold">Day {selectedDay}</h1>
+                </div>
+                <div className="divide-y divide-gray-200">
+                  <div key={index}>
+                    <p>Category: {exp.Categories}</p>
+                    <p>Price: {exp.Price}$</p>
+                  </div>
+                </div>
               </div>
-            ))}
-          </section>
-        ))}
+            </div>
+          ))}
+      </section>
     </>
   );
 }
 
-export default AddExpenses;
+export default Progress;

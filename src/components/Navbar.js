@@ -1,18 +1,27 @@
-// Navbar.js
 import React, {useState} from "react";
 import {Link} from "react-router-dom";
+import {useSelector, useDispatch} from "react-redux";
+import {logout} from "../Store/authSlice";
+import {useNavigate} from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/Login");
   };
 
   return (
     <nav className=" bg-transparent p-4">
       <div className="container mx-auto flex flex-col lg:flex-row justify-between items-center">
-        <div className=" text-gray-600 font-bold text-3xl mb-4 lg:mb-0 hover:text-cyan-400 hover:cursor-pointer">
+        <div className=" text-gray-600 font-bold text-3xl mb-4 lg:mb-0 hover:text-indigo-600 hover:cursor-pointer">
           Expense Tracker
         </div>
         <div className="lg:hidden">
@@ -53,37 +62,46 @@ const Navbar = () => {
         >
           <Link
             to="/"
-            className=" text-gray-600 px-4 py-2  hover:text-cyan-400"
+            className=" text-gray-600 px-4 py-2  hover:text-indigo-600"
           >
             Home
           </Link>
           <Link
             to="/Budget"
-            className=" text-gray-600 px-4 py-2  hover:text-cyan-400"
+            className=" text-gray-600 px-4 py-2  hover:text-indigo-600"
           >
             Add Budget
           </Link>
           <Link
             to="/Expenses"
-            className=" text-gray-600 px-4 py-2 hover:text-cyan-400"
+            className=" text-gray-600 px-4 py-2 hover:text-indigo-600"
           >
-            Add Expences
+            Add Expenses
           </Link>
           <Link
             to="/Progress"
-            className=" text-gray-600 px-4 py-2  hover:text-cyan-400"
+            className=" text-gray-600 px-4 py-2  hover:text-indigo-600"
           >
-           Progress
+            Progress
           </Link>
-          <Link
-            to="/Login"
-            className=" text-gray-600 px-4 py-2  hover:text-cyan-400"
-          >
-            Login
-          </Link>
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              className=" text-gray-600 px-4 py-2  hover:text-indigo-600"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/Login"
+              className=" text-gray-600 px-4 py-2  hover:text-indigo-600"
+            >
+              Login
+            </Link>
+          )}
           <Link
             to="/News"
-            className=" text-gray-600 px-4 py-2  hover:text-cyan-400"
+            className=" text-gray-600 px-4 py-2  hover:text-indigo-600"
           >
             News
           </Link>
