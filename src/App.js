@@ -16,6 +16,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <Router>
+        
         <Navbar />
         <Routes>
         <Route path="/Progress" element={<Progress />} />
